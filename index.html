@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <title>Frontend Mentor | Calculator app</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spartan:wght@700&display=swap" rel="stylesheet">
+</head>
+
+<body class="theme__desaturated-blue">
+  <div id="app">
+    <div class="calculator-container">
+      <header>
+        <div class="logo">
+          <a href="index.html">calc</a>
+        </div>
+        <div class="theme-switch">
+          <div>
+            <span>THEME</span>
+          </div>
+          <div class="switcher">
+            <div class="theme-options">
+              <span>1</span><span>2</span><span>3</span>
+            </div>
+            <div class="theme-toggle">
+              <div id="toggle-button" class="red-btn"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <section class="panel panel__results">
+        <span id="current-result"></span>
+        <span id="entered-number"></span>
+      </section>
+      <section class="panel panel__buttons">
+        <button data-btn-content='7'>7</button>
+        <button data-btn-content='8'>8</button>
+        <button data-btn-content='9'>9</button>
+        <button data-btn-content='DEL' data-operation="delete" class="blue-btn">DEL</button>
+        <button data-btn-content='4'>4</button>
+        <button data-btn-content='5'>5</button>
+        <button data-btn-content='6'>6</button>
+        <button data-btn-content='+' data-operation="add">+</button>
+        <button data-btn-content='1'>1</button>
+        <button data-btn-content='2'>2</button>
+        <button data-btn-content='3'>3</button>
+        <button data-btn-content='-' data-operation="subtract">-</button>
+        <button data-btn-content='.'>.</button>
+        <button data-btn-content='0'>0</button>
+        <button data-btn-content='/' data-operation="divide">/</button>
+        <button data-btn-content='x' data-operation="multiply">x</button>
+        <button data-btn-content='RESET' data-operation="reset" class="blue-btn">RESET</button>
+        <button data-btn-content='=' data-operation="result" class="red-btn">=</button>
+      </section>
+    </div>
+  </div>
+  <script src="assets/js/Themes.js" type="module"></script>
+  <script src="assets/js/ButtonsPanel.js" type="module"></script>
+  <script src="assets/js/ResultsPanel.js" type="module"></script>
+  <script src="assets/js/Calculator.js" type="module"></script>
+  <script src="assets/js/App.js" type="module"></script>
+  <script src="assets/js/fitty.min.js"></script>
+  <script src="node_modules/number-format.js/lib/format.min.js"></script>
+</body>
+
+</html>
