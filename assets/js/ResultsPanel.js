@@ -21,7 +21,7 @@ export class ResultsPanel {
         if (this.enteredNumber.length === 0) {
             this.enteredNumberPanel.textContent = 0;
         } else {
-            this.enteredNumberPanel.textContent = format('### ###.#########', this.enteredNumber);
+            this.enteredNumberPanel.textContent = this.format(this.enteredNumber);
         }
     }
 
@@ -32,7 +32,7 @@ export class ResultsPanel {
 
     checkcurrentResultPanelVisbility() {
         const isThisFirstNumber = this.currentResult === undefined ? true : false;
-        if(isThisFirstNumber) {
+        if (isThisFirstNumber) {
             this.showCurrentResultPanel();
             this.currentResult = this.enteredNumber === '' ? 0 : Number(this.enteredNumber);
         }
@@ -51,7 +51,24 @@ export class ResultsPanel {
     }
 
     updateCurrentResultPanel(mathSymbol) {
-        this.currentResultPanel.textContent = `${this.currentResult} ${mathSymbol}`;
-        this.enteredNumberPanel.textContent = `${this.currentResult}`;
+        this.currentResultPanel.textContent = `${this.format(this.currentResult)} ${mathSymbol}`;
+        this.enteredNumberPanel.textContent = `${this.format(this.currentResult)}`;
+    }
+
+    format(numberToFormat) {
+        numberToFormat = numberToFormat.toString();
+        let separatorIndex = numberToFormat.indexOf('.');
+        if (separatorIndex != -1) {
+            const partToFormat = Number(numberToFormat.slice(0, numberToFormat.indexOf('.')));
+            let formattedPart = partToFormat.toLocaleString();
+            let unformattedPart = numberToFormat.slice(numberToFormat.indexOf('.') + 1);
+            return `${formattedPart},${unformattedPart}`;
+        } else if (numberToFormat.includes('e')) {
+            return numberToFormat;
+        } else {
+            let formattedNumber = Number(numberToFormat);
+            formattedNumber = formattedNumber.toLocaleString();
+            return formattedNumber;
+        }
     }
 }

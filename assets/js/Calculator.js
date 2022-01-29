@@ -1,10 +1,13 @@
 // TO DO:
 // dzielenie przez 0 - DONE
 // sztywna szerokosc kalkulatora, ewentualne zmniejszanie wielkosci cyfr - DONE
-// pojebane ulamki
-// ograniczyc maksymalna liczbe znakow jaka mozna wprowadzic
-// maska dzielaca cyfry na tysiace
-// mozliwosc wprowadzania separatora wiecej niz jeden raz
+// mozliwosc wprowadzania separatora wiecej niz jeden raz - DONE
+// maska dzielaca cyfry na tysiace - DONE
+// wcisniecie "0" jesli w panelu wyswietlone jest "0" - czysci panel nie wyswietlajac zadnej cyfry - DONE
+// ograniczyc maksymalna liczbe znakow jaka mozna wprowadzic - DONE
+// 9999 + = -- nie podanie zadnej liczby po wcisnieciu znaku dzialania, a nastepnie wcisniecie = skutkuje przekazaniem NaN - DONE
+// zablokowac mozliwosc dzialan jesli jedynym wprowadzonym znakiem jest separator - DONE
+// pojebane ulamki - DONE
 
 import {
     ButtonsPanel
@@ -44,122 +47,88 @@ export class Calculator {
         this.dividingByZeroFlag = false;
     }
 
-    //TO DO
-    //rozpisać if'y w jakis bardziej przejrzysty sposob
-    // dopisac regule ktora przy ".costam" bedzie dodawac zero na poczatku
     updateEnteredNumber(digit) {
-        if(digit === "." && this.resultsPanel.enteredNumber.includes('.')) {
-            return
+        let doubledSeparatorFlag = this.checkSeparatorDuplication(digit);
+        if (!doubledSeparatorFlag || !this.resultsPanel.didUserEnteredAnything) {
+            if (!this.resultsPanel.didUserEnteredAnything) {
+                this.resultsPanel.clearEnteredNumber();
+            }
+            if (this.resultsPanel.enteredNumber.length < 15) {
+                this.resultsPanel.didUserEnteredAnything = true;
+                this.resultsPanel.enteredNumber += digit;
+                this.resultsPanel.displayEnteredNumber();
+            }
         }
-        if (!this.resultsPanel.didUserEnteredAnything) {
-            this.resultsPanel.clearEnteredNumber();
+    }
+
+    checkSeparatorDuplication(digit) {
+        if (digit === "." && this.resultsPanel.enteredNumber.toString().includes('.')) {
+            return true;
+        } else {
+            return false;
         }
-        this.resultsPanel.didUserEnteredAnything = true;
-        this.resultsPanel.enteredNumber += digit;
-        this.resultsPanel.displayEnteredNumber();
     }
 
     chooseOperation(operation) {
-        switch (operation) {
-            case 'delete':
-                this.resultsPanel.deleteLastDigit();
-                break;
-            case 'reset':
-                this.reset();
-                break;
-            case 'add':
-                this.checkPreviouslySelectedOperation(); //decide if we have to count something or just choose an operation
-                this.resultsPanel.checkcurrentResultPanelVisbility();
-                this.resultsPanel.updateCurrentResultPanel('+');
-                this.selectedOperation = operation;
-                this.resultsPanel.didUserEnteredAnything = false;
-                this.resultsPanel.enteredNumber = Number(this.resultsPanel.enteredNumberPanel.textContent);
-                break;
-            case 'subtract':
-                this.checkPreviouslySelectedOperation(); //decide if we have to count something or just choose an operation
-                this.resultsPanel.checkcurrentResultPanelVisbility();
-                this.resultsPanel.updateCurrentResultPanel('-');
-                this.selectedOperation = operation;
-                this.resultsPanel.didUserEnteredAnything = false;
-                this.resultsPanel.enteredNumber = Number(this.resultsPanel.enteredNumberPanel.textContent);
-                break;
-            case 'divide':
-                this.checkPreviouslySelectedOperation(); //decide if we have to count something or just choose an operation
-                this.resultsPanel.checkcurrentResultPanelVisbility();
-                this.resultsPanel.updateCurrentResultPanel('/');
-                this.selectedOperation = operation;
-                this.resultsPanel.didUserEnteredAnything = false;
-                this.resultsPanel.enteredNumber = Number(this.resultsPanel.enteredNumberPanel.textContent);
-                break;
-            case 'multiply':
-                this.checkPreviouslySelectedOperation(); //decide if we have to count something or just choose an operation
-                this.resultsPanel.checkcurrentResultPanelVisbility();
-                this.resultsPanel.updateCurrentResultPanel('x');
-                this.selectedOperation = operation;
-                this.resultsPanel.didUserEnteredAnything = false;
-                this.resultsPanel.enteredNumber = Number(this.resultsPanel.enteredNumberPanel.textContent);
-                break;
-            case 'result':
-                const resultsContent = this.prepareResults();
-                this.checkPreviouslySelectedOperation('ignoreFlag');
-                if (this.dividingByZeroFlag) {
-                    return this.dividingByZeroFailure();
-                }
-                this.resultsPanel.displayResults(resultsContent);
-                this.resultsPanel.didUserEnteredAnything = false;
-                break;
+        if (operation === 'delete' || operation === 'reset' || operation === 'result') {
+            switch (operation) {
+                case 'delete':
+                    this.resultsPanel.deleteLastDigit();
+                    break;
+                case 'reset':
+                    this.reset();
+                    break;
+                case 'result':
+                    const resultsContent = this.prepareResults();
+                    this.checkPreviouslySelectedOperation('ignoreFlag');
+                    if (this.dividingByZeroFlag) {
+                        return this.dividingByZeroFailure();
+                    }
+                    this.resultsPanel.displayResults(resultsContent);
+                    this.resultsPanel.didUserEnteredAnything = false;
+                    break;
+            }
+        } else {
+            const symbol = mathSymbols.find(x => x.operation === operation).symbol;
+            this.checkEnteredNumberCorectness();
+            this.checkPreviouslySelectedOperation(); //decide if we have to count something or just choose an operation
+            this.resultsPanel.checkcurrentResultPanelVisbility();
+            this.resultsPanel.updateCurrentResultPanel(symbol);
+            this.selectedOperation = operation;
+            this.resultsPanel.didUserEnteredAnything = false;
+            this.resultsPanel.enteredNumber = this.resultsPanel.currentResult;
         }
     }
 
-    checkPreviouslySelectedOperation(flagIgnoring = 'dontIgnoreFlag') {
+    checkPreviouslySelectedOperation(userActivityFlagIgnoring = 'dontIgnoreFlag') {
         if (this.selectedOperation === undefined || this.resultsPanel.enteredNumber === '') {
             return;
         }
-        switch (this.selectedOperation) {
-            case 'add':
-                if (this.resultsPanel.didUserEnteredAnything || flagIgnoring === 'ignoreFlag') {
+        if (this.resultsPanel.didUserEnteredAnything || userActivityFlagIgnoring === 'ignoreFlag') {
+            switch (this.selectedOperation) {
+                case 'add':
                     this.add();
-                }
-                break;
-            case 'subtract':
-                if (this.resultsPanel.didUserEnteredAnything || flagIgnoring === 'ignoreFlag') {
+                    break;
+                case 'subtract':
                     this.subtract();
-                }
-                break;
-            case 'divide':
-                if (this.resultsPanel.didUserEnteredAnything || flagIgnoring === 'ignoreFlag') {
+                    break;
+                case 'divide':
                     this.divide();
-                }
-                break;
-            case 'multiply':
-                if (this.resultsPanel.didUserEnteredAnything || flagIgnoring === 'ignoreFlag') {
+                    break;
+                case 'multiply':
                     this.multiply();
-                }
-                break;
+                    break;
+            }
         }
-    }
-
-    prepareResults() {
-        if (mathSymbols.find(data => data.operation === this.selectedOperation)) {
-            const symbol = mathSymbols.find(x => x.operation === this.selectedOperation).symbol;
-            const previousResult = this.resultsPanel.currentResult;
-            const enteredNumber = this.resultsPanel.enteredNumber;
-            return `${previousResult} ${symbol} ${enteredNumber} =`;
-        } else if (this.resultsPanel.enteredNumber != '') {
-            return `${this.resultsPanel.enteredNumber} =`;
-        } else {
-            return `0 =`
-        }
-
     }
 
     add() {
-        this.resultsPanel.currentResult += Number(this.resultsPanel.enteredNumber);
+        this.resultsPanel.currentResult = exactMath.add(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
         this.resultsPanel.updateCurrentResultPanel('+');
     }
 
     subtract() {
-        this.resultsPanel.currentResult -= Number(this.resultsPanel.enteredNumber);
+        this.resultsPanel.currentResult = exactMath.sub(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
         this.resultsPanel.updateCurrentResultPanel('-');
     }
 
@@ -167,14 +136,27 @@ export class Calculator {
         if (this.resultsPanel.enteredNumber == 0) {
             return this.dividingByZeroFlag = true;
         } else {
-            this.resultsPanel.currentResult = this.resultsPanel.currentResult / Number(this.resultsPanel.enteredNumber);
+            this.resultsPanel.currentResult = exactMath.div(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
             this.resultsPanel.updateCurrentResultPanel('/');
         }
     }
 
     multiply() {
-        this.resultsPanel.currentResult = this.resultsPanel.currentResult * Number(this.resultsPanel.enteredNumber);
+        this.resultsPanel.currentResult = exactMath.mul(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
         this.resultsPanel.updateCurrentResultPanel('*');
+    }
+
+    prepareResults() {
+        if (mathSymbols.find(data => data.operation === this.selectedOperation)) {
+            const symbol = mathSymbols.find(x => x.operation === this.selectedOperation).symbol;
+            const previousResult = this.resultsPanel.format(this.resultsPanel.currentResult);
+            const enteredNumber = this.resultsPanel.format(this.resultsPanel.enteredNumber);
+            return `${previousResult} ${symbol} ${enteredNumber} =`;
+        } else if (this.resultsPanel.enteredNumber != '') {
+            return `${this.resultsPanel.format(this.resultsPanel.enteredNumber)} =`;
+        } else {
+            return `0 =`
+        }
     }
 
     reset() {
@@ -189,5 +171,11 @@ export class Calculator {
     dividingByZeroFailure() {
         this.reset();
         this.resultsPanel.enteredNumberPanel.textContent = 'Nie można dzielić przez zero';
+    }
+
+    checkEnteredNumberCorectness() {
+        if (this.resultsPanel.enteredNumber === '.') {
+            this.resultsPanel.enteredNumber = 0;
+        }
     }
 }
