@@ -123,11 +123,13 @@ export class Calculator {
     }
 
     add() {
+        this.checkEnteredNumberCorectness();
         this.resultsPanel.currentResult = exactMath.add(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
         this.resultsPanel.updateCurrentResultPanel('+');
     }
 
     subtract() {
+        this.checkEnteredNumberCorectness();
         this.resultsPanel.currentResult = exactMath.sub(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
         this.resultsPanel.updateCurrentResultPanel('-');
     }
@@ -136,17 +138,20 @@ export class Calculator {
         if (this.resultsPanel.enteredNumber == 0) {
             return this.dividingByZeroFlag = true;
         } else {
+            this.checkEnteredNumberCorectness();
             this.resultsPanel.currentResult = exactMath.div(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
             this.resultsPanel.updateCurrentResultPanel('/');
         }
     }
 
     multiply() {
+        this.checkEnteredNumberCorectness();
         this.resultsPanel.currentResult = exactMath.mul(this.resultsPanel.currentResult, this.resultsPanel.enteredNumber)
         this.resultsPanel.updateCurrentResultPanel('*');
     }
 
     prepareResults() {
+        this.checkEnteredNumberCorectness();
         if (mathSymbols.find(data => data.operation === this.selectedOperation)) {
             const symbol = mathSymbols.find(x => x.operation === this.selectedOperation).symbol;
             const previousResult = this.resultsPanel.format(this.resultsPanel.currentResult);
@@ -174,8 +179,11 @@ export class Calculator {
     }
 
     checkEnteredNumberCorectness() {
-        if (this.resultsPanel.enteredNumber === '.') {
+        const num = this.resultsPanel.enteredNumber.toString();
+        if (num === '.') {
             this.resultsPanel.enteredNumber = 0;
+        } else if (num.split('')[num.length - 1] === '.') {
+            this.resultsPanel.enteredNumber = num.slice(0, num.length - 1);
         }
     }
 }

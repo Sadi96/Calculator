@@ -7,13 +7,13 @@ export class ButtonsPanel {
     //this functions is called by Calculator, so "this" is referencing to Calculator
     checkClickedButton(button) {
         if (button.hasAttribute('data-operation')) {
-            if(!this.divingByZeroFlag) {
+            if(!this.dividingByZeroFlag) {
                 const operation = button.getAttribute('data-operation');
                 this.chooseOperation(operation);
             }
         } else {
-            if(this.divingByZeroFlag) {
-                this.divingByZeroFlag = false;
+            if(this.dividingByZeroFlag) {
+                this.dividingByZeroFlag = false;
             }
             this.updateEnteredNumber(button.textContent);
         }
