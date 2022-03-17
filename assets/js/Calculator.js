@@ -1,14 +1,3 @@
-// TO DO:
-// dzielenie przez 0 - DONE
-// sztywna szerokosc kalkulatora, ewentualne zmniejszanie wielkosci cyfr - DONE
-// mozliwosc wprowadzania separatora wiecej niz jeden raz - DONE
-// maska dzielaca cyfry na tysiace - DONE
-// wcisniecie "0" jesli w panelu wyswietlone jest "0" - czysci panel nie wyswietlajac zadnej cyfry - DONE
-// ograniczyc maksymalna liczbe znakow jaka mozna wprowadzic - DONE
-// 9999 + = -- nie podanie zadnej liczby po wcisnieciu znaku dzialania, a nastepnie wcisniecie = skutkuje przekazaniem NaN - DONE
-// zablokowac mozliwosc dzialan jesli jedynym wprowadzonym znakiem jest separator - DONE
-// pojebane ulamki - DONE
-
 import {
     ButtonsPanel
 } from './ButtonsPanel.js';
